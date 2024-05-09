@@ -71,6 +71,4 @@ def contar_correos_etiquetas_total():
     df_suma = df.groupby('Etiqueta', as_index=False)['Cantidad de Correos'].sum()
         # Ordenar por orden alfabético
     df_suma = df_suma.sort_values(by='Etiqueta')
-         # Renombrar la columna 'Etiqueta' por 'Caminante'
-   # df_suma = df_suma.rename(columns={'Etiqueta': 'Caminante'})
     return df_suma
