@@ -5,7 +5,6 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 import os
 import pickle
-import openpyxl
 
 
 # Credenciales
@@ -48,7 +47,7 @@ def contar_correos_etiquetas():
 def filtrar_etiquetas(df):
     etiquetas_a_eliminar = ['CATEGORY_FORUMS', 'CATEGORY_PERSONAL', 'CATEGORY_PROMOTIONS', 'CATEGORY_SOCIAL', 
                             'CATEGORY_UPDATES', 'CHAT', 'DRAFT', 'IMPORTANT', 'SENT', 'SPAM', 'STARRED', 
-                            'TRASH', 'UNREAD']
+                            'TRASH', 'UNREAD','Z CARTA DEL PADRE A CAMINANTES']
     df_filtrado = df[~df['Etiqueta'].isin(etiquetas_a_eliminar)]
     return df_filtrado
 
@@ -59,7 +58,7 @@ def contar_correos_etiquetas_total():
     for etiqueta in etiquetas:
         etiqueta_id = etiqueta['id']
         cantidad_correos_etiqueta = obtener_numero_correos_etiqueta(etiqueta_id)
-        if cantidad_correos_etiqueta > 0:
+        if cantidad_correos_etiqueta >= 0:
             if '/' in etiqueta['name']:
                 nombre_etiqueta, subetiqueta = etiqueta['name'].split('/')
                 cantidad_correos_subetiqueta = obtener_numero_correos_etiqueta(etiqueta_id)
@@ -68,4 +67,10 @@ def contar_correos_etiquetas_total():
                 data.append({'Etiqueta': etiqueta['name'], 'Subetiqueta': None, 'Cantidad de Correos': cantidad_correos_etiqueta})
 
     df = pd.DataFrame(data)
-    return df
+        # Agrupar por etiqueta y sumar la cantidad de correos
+    df_suma = df.groupby('Etiqueta', as_index=False)['Cantidad de Correos'].sum()
+        # Ordenar por orden alfabético
+    df_suma = df_suma.sort_values(by='Etiqueta')
+         # Renombrar la columna 'Etiqueta' por 'Caminante'
+   # df_suma = df_suma.rename(columns={'Etiqueta': 'Caminante'})
+    return df_suma
